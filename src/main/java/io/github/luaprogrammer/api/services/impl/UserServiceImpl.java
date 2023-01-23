@@ -1,6 +1,8 @@
 package io.github.luaprogrammer.api.services.impl;
 
-import io.github.luaprogrammer.api.exceptions.ObjectNotFoundException;
+import io.github.luaprogrammer.api.services.exceptions.DataIntegrityViolationException;
+import io.github.luaprogrammer.api.services.exceptions.ObjectNotFoundException;
+import io.github.luaprogrammer.api.model.UserModel;
 import io.github.luaprogrammer.api.model.dto.UserDto;
 import io.github.luaprogrammer.api.repository.UserRepository;
 import io.github.luaprogrammer.api.services.UserService;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,5 +38,20 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(u -> mapper.map(u, UserDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto create(UserDto user) {
+        findByEmail(user);
+        return mapper.map(
+                repository.save(mapper.map(user, UserModel.class)),
+                UserDto.class);
+    }
+
+    private void findByEmail(UserDto user) {
+        Optional<UserModel> userSaved =  repository.findByEmail(user.getEmail());
+        if (userSaved.isPresent()) {
+            throw new DataIntegrityViolationException("E-mail já cadastrado no sistema");
+        }
     }
 }
