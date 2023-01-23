@@ -1,7 +1,7 @@
 package io.github.luaprogrammer.api.services;
 
-import io.github.luaprogrammer.api.model.UserModel;
+import io.github.luaprogrammer.api.model.dto.UserDto;
 
 public interface UserService {
-    UserModel findById(Integer id);
+    UserDto findById(Integer id);
 }
