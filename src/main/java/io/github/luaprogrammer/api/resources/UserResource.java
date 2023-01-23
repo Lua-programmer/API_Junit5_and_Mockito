@@ -1,6 +1,6 @@
 package io.github.luaprogrammer.api.resources;
 
-import io.github.luaprogrammer.api.model.User;
+import io.github.luaprogrammer.api.model.UserModel;
 import io.github.luaprogrammer.api.services.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class UserResource {
     private final UserServiceImpl service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Integer id) {
+    public ResponseEntity<UserModel> findById(@PathVariable Integer id) {
         return ResponseEntity.ok().body(service.findById(id));
     }
 }
