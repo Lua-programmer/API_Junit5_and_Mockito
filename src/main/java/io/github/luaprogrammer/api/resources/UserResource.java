@@ -14,9 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserResource {
+    public static final String ID = "/{id}";
     private final UserServiceImpl service;
 
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public ResponseEntity<UserDto> findById(@PathVariable Integer id) {
         return ResponseEntity.ok().body(service.findById(id));
     }
@@ -33,9 +34,16 @@ public class UserResource {
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ID)
     public ResponseEntity<UserDto> update(@PathVariable Integer id, @RequestBody UserDto user) {
         service.update(id, user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(ID)
+
+    public ResponseEntity<UserDto> delete(@PathVariable Integer id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

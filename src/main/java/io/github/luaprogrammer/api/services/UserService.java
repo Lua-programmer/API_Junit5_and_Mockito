@@ -9,4 +9,5 @@ public interface UserService {
     List<UserDto> findAll();
     UserDto create(UserDto user);
     UserDto update(Integer id, UserDto user);
+    void delete(Integer id);
 }
