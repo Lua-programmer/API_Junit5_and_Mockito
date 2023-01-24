@@ -8,4 +8,5 @@ public interface UserService {
     UserDto findById(Integer id);
     List<UserDto> findAll();
     UserDto create(UserDto user);
+    UserDto update(Integer id, UserDto user);
 }

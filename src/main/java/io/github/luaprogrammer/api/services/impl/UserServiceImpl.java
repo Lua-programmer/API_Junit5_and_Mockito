@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,9 +49,17 @@ public class UserServiceImpl implements UserService {
                 UserDto.class);
     }
 
+    @Override
+    public UserDto update(Integer id, UserDto user) {
+        user.setId(id);
+        findByEmail(user);
+        return mapper.map(
+                repository.save(mapper.map(user, UserModel.class)), UserDto.class);
+    }
+
     private void findByEmail(UserDto user) {
         Optional<UserModel> userSaved =  repository.findByEmail(user.getEmail());
-        if (userSaved.isPresent()) {
+        if (userSaved.isPresent() && !Objects.equals(userSaved.get().getId(), user.getId())) {
             throw new DataIntegrityViolationException("E-mail já cadastrado no sistema");
         }
     }
