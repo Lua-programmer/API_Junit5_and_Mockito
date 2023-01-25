@@ -8,6 +8,7 @@ import io.github.luaprogrammer.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.when;
 
 @SuppressWarnings("AssertBetweenInconvertibleTypes")
 @SpringBootTest
 class UserServiceImplTest {
 
     public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
+    public static final String E_MAIL_JA_CADASTRADO_NO_SISTEMA = "E-mail já cadastrado no sistema";
     @Autowired
     private UserServiceImpl service;
 
@@ -47,7 +48,7 @@ class UserServiceImplTest {
 
     @Test
     void whenFindByIdIdThenReturnUserInstance() {
-        when(repository.findById(anyInt())).thenReturn(
+        Mockito.when(repository.findById(anyInt())).thenReturn(
                 Optional.ofNullable(user));
 
         UserDto response = service.findById(1);
@@ -56,7 +57,7 @@ class UserServiceImplTest {
 
     @Test
     void whenFindByIdIdThenReturnExceptionIfUserNotFound() {
-        when(repository.findById(anyInt()))
+        Mockito.when(repository.findById(anyInt()))
                 .thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
 
         try {
@@ -69,7 +70,7 @@ class UserServiceImplTest {
 
     @Test
     void whenFindAllThenReturnAnListOfUsers() {
-        when(repository.findAll()).thenReturn(List.of(user));
+        Mockito.when(repository.findAll()).thenReturn(List.of(user));
 
         List<UserDto> response = service.findAll();
 
@@ -80,7 +81,7 @@ class UserServiceImplTest {
 
     @Test
     void whenCreateThenReturnSuccess() {
-        when(repository.save(any())).thenReturn(user);
+        Mockito.when(repository.save(any())).thenReturn(user);
 
         UserDto response = service.create(userDto);
         assertNotNull(response);
@@ -93,7 +94,7 @@ class UserServiceImplTest {
 
     @Test
     void whenCreateThenReturnDataIntegrityViolationException() {
-        when(repository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
+        Mockito.when(repository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
 
         try {
             user.setId(2);
@@ -105,7 +106,29 @@ class UserServiceImplTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        Mockito.when(repository.save(any())).thenReturn(user);
+
+        UserDto response = service.update(user.getId(), userDto);
+        assertNotNull(response);
+        assertEquals(UserDto.class, response.getClass());
+        assertEquals(1, response.getId());
+        assertEquals("Zoe", response.getName());
+        assertEquals("zoe@gmail.com", response.getEmail());
+        assertEquals("123", response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnDataIntegrityViolationException() {
+        Mockito.when(repository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
+
+        try {
+            user.setId(2);
+            service.create(userDto);
+        } catch (Exception ex) {
+            assertEquals(DataIntegrityViolationException.class, ex.getClass());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
+        }
     }
 
     @Test
