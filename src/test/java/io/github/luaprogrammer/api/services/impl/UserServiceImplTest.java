@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +77,16 @@ class UserServiceImplTest {
     }
 
     @Test
-    void create() {
+    void whenCreateThenReturnSuccess() {
+        when(repository.save(any())).thenReturn(user);
+
+        UserDto response = service.create(userDto);
+        assertNotNull(response);
+        assertEquals(UserDto.class, response.getClass());
+        assertEquals(1, response.getId());
+        assertEquals("Zoe", response.getName());
+        assertEquals("zoe@gmail.com", response.getEmail());
+        assertEquals("123", response.getPassword());
     }
 
     @Test
@@ -89,6 +99,6 @@ class UserServiceImplTest {
 
     private void startUser() {
         userDto = new UserDto(1, "Zoe", "zoe@gmail.com", "123");
-        user = new UserModel(1, "Petter", "petter@gmail.com", "321");
+        user = new UserModel(1, "Zoe", "zoe@gmail.com", "123");
     }
 }
