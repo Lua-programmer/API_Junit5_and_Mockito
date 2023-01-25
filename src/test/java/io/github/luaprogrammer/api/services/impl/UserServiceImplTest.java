@@ -3,6 +3,7 @@ package io.github.luaprogrammer.api.services.impl;
 import io.github.luaprogrammer.api.model.UserModel;
 import io.github.luaprogrammer.api.model.dto.UserDto;
 import io.github.luaprogrammer.api.repository.UserRepository;
+import io.github.luaprogrammer.api.services.exceptions.DataIntegrityViolationException;
 import io.github.luaprogrammer.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -87,6 +89,19 @@ class UserServiceImplTest {
         assertEquals("Zoe", response.getName());
         assertEquals("zoe@gmail.com", response.getEmail());
         assertEquals("123", response.getPassword());
+    }
+
+    @Test
+    void whenCreateThenReturnDataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user));
+
+        try {
+            user.setId(2);
+            service.create(userDto);
+        } catch (Exception ex) {
+            assertEquals(DataIntegrityViolationException.class, ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
     }
 
     @Test
