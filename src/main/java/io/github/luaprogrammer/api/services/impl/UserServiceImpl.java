@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Integer id) {
-        UserModel user = repository.findById(id).orElseThrow(
+        repository.findById(id).orElseThrow(
                 () -> new ObjectNotFoundException("Objeto não encontrado")
         );
-        repository.delete(user);
+        repository.deleteById(id);
     }
 
     private void findByEmail(UserDto user) {
